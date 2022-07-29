@@ -287,6 +287,20 @@ class Strategy:
         
         return probs
 
+    def predict_prob_dropout_split(self, X, Y, n_drop):
+        loader_te = DataLoader(self.handler(X, Y, transform=self.args['transformTest']),
+                            shuffle=False, **self.args['loader_te_args'])
+
+        self.clf.train()
+        probs = torch.zeros([n_drop, len(Y), len(np.unique(Y))])
+        with torch.no_grad():
+            for i in range(n_drop):
+                for x, y, idxs in loader_te:
+                    x, y = Variable(x.cuda()), Variable(y.cuda())
+                    out, e1 = self.clf(x)
+                    probs[i][idxs] += F.softmax(out, dim=1).cpu().data
+            return probs
+
     def get_embedding(self, X, Y):
         loader_te = DataLoader(self.handler(X, Y, transform=self.args['transformTest']), shuffle=False, **self.args['loader_te_args'])
         self.clf.eval()

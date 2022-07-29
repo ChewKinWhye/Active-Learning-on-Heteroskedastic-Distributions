@@ -15,7 +15,7 @@ import pdb
 from scipy.stats import zscore
 from matplotlib import pyplot as plt
 from augment import Augment, Cutout
-from query_strategies import RandomSampling, LeastConfidence, MarginSampling, EntropySampling, CoreSet, BadgeSampling, LhdSampling
+from query_strategies import RandomSampling, LeastConfidence, MarginSampling, EntropySampling, CoreSet, BadgeSampling, LhdSampling, BALDSampling
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--alg', help='acquisition algorithm', type=str, default='rand')
@@ -137,6 +137,8 @@ elif opts.alg == 'coreset': # coreset sampling
     strategy = CoreSet(X_tr, Y_tr, idxs_lb, net, handler, args, opts)
 elif opts.alg == 'lhd': # score-based sampling
     strategy = LhdSampling(X_tr, Y_tr, idxs_lb, net, handler, args, opts)
+elif opts.alg == 'bald': # score-based sampling
+    strategy = BALDSampling(X_tr, Y_tr, idxs_lb, net, handler, args, opts)
 else: 
     print('Choose a valid acquisition function.', flush=True)
     raise ValueError
